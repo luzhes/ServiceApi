@@ -1,51 +1,55 @@
 const express = require('express');
-const { getAllTours, getTourById, registerTour, removeTour, updateTour } = require('../src/dataBase/tour.db')
-const tourRoute = express.Router();
+const { getAllConcerts, getConcertById, registerConcert, removeConcert, updateConcert } = require('../src/dataBase/concert.db');
+const concertRoute = express.Router()
 
 /**
  * @swagger
  * components:
  *  schemas:
- *      Tour:
+ *      Concert:
  *          type: object
  *          properties:
- *              year:
- *                  type: integer
- *                  description: the tour year
- *              name:
+ *              location:
  *                  type: string
- *                  description: the tour name
- *              band:
+ *                  description: the concert location
+ *              date:
  *                  type: string
- *                  description: the band code
+ *                  description: the concert date
+ *              stadium:
+ *                  type: string
+ *                  description: the concert stadium
+ *              tour:
+ *                  type: string
+ *                  description: the concert tour
  *          required:
- *              - year
- *              - name
- *              - band
+ *              - location
+ *              - date
+ *              - stadium
+ *              - tour
  *          example:
- *              year: 2022
- *              name: 'Latidos'
- *              band: 'THE SCRIPT'
- *  
+ *              location: 'Bolivia'
+ *              date: '25-05-2023'
+ *              stadium: 'Hernando Siles'
+ *              tour: '12345'
  */
 
 /**
  * @swagger
- * /api/tours:
+ * /api/concerts:
  *  get:
- *      summary: Return all tours
- *      tags: [Tour]
+ *      summary: Return all concerts
+ *      tags: [Concert]
  *      responses:
  *          200:
- *              description: get all Tours
+ *              description: get all concerts
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: array
  */
 
- tourRoute.get('/tours', async (req, res) => {
-    const { success, data } = await getAllTours()
+concertRoute.get('/concerts', async (req, res) => {
+    const { success, data } = await getAllConcerts()
 
     if (success) {
         return res.status(200).json({ success, data, code: 200 })
@@ -53,33 +57,34 @@ const tourRoute = express.Router();
     return res.status(500).json({ success: false, messsage: "Error", code: 500 })
 })
 
+
 /**
  * @swagger
- * /api/tour/{sortId}:
+ * /api/concert/{sortId}:
  *  get:
- *      summary: Return a tour
- *      tags: [Tour]
+ *      summary: Return a concert
+ *      tags: [Concert]
  *      parameters:
  *          - in: path
  *            name: sortId
  *            schema:
  *                  type: string
  *            required: true
- *            description: the tour id 
+ *            description: the concert id 
  *      responses:
  *          200:
- *              description: get one Tour
+ *              description: get one concert
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *          404:
- *              description: tour not found!
+ *              description: concert not found!
  */
 
-tourRoute.get("/tour/:sortId", async (req, res) => {
+concertRoute.get("/concert/:sortId", async (req, res) => {
     const { sortId } = req.params;
-    const { success, data } = await getTourById(sortId);
+    const { success, data } = await getConcertById(sortId);
     if (success) {
         return res.status(200).json({ success, data, code: 200 });
     }
@@ -89,25 +94,25 @@ tourRoute.get("/tour/:sortId", async (req, res) => {
 
 /**
  * @swagger
- * /api/tour/createTour:
+ * /api/concert/createConcert:
  *  post:
- *      summary: Create a new tour
- *      tags: [Tour]
+ *      summary: Create a new concert
+ *      tags: [Concert]
  *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *               schema:
  *                  type: object
- *                  $ref: '#/components/schemas/Tour'
+ *                  $ref: '#/components/schemas/Concert'
  *      responses:
  *          201:
- *              description: new tour created!
+ *              description: new concert created!
  * 
  */
 
-tourRoute.post('/tour/createTour', async (req, res) => {
-    const { success } = await registerTour(req.body)
+concertRoute.post('/concert/createConcert', async (req, res) => {
+    const { success } = await registerConcert(req.body)
     if (success) {
         return res.status(201).json({ success, message: 'Register success!!!', code: 201 })
     }
@@ -116,68 +121,68 @@ tourRoute.post('/tour/createTour', async (req, res) => {
 
 /**
  * @swagger
- * /api/tour/{sortId}:
+ * /api/concert/{sortId}:
  *  delete:
- *      summary: delete a tour
- *      tags: [Tour]
+ *      summary: delete a concert
+ *      tags: [Concert]
  *      parameters:
  *          - in: path
  *            name: sortId
  *            schema:
  *                  type: string
  *            required: true
- *            description: the tour is deleting 
+ *            description: the concert is deleting 
  *      responses:
  *          200:
- *              description: tour deleted
+ *              description: concert deleted
  *          404:
- *              description: tour not found!
+ *              description: concert not found!
  */
-tourRoute.delete('/tour/:sortId', async (req, res) => {
+
+concertRoute.delete('/concert/:sortId', async (req, res) => {
     const { sortId } = req.params;
-    const { success } = await removeTour(sortId)
+    const { success } = await removeConcert(sortId)
     if (success) {
         return res.status(200).json({ success, code: 200 })
     }
     return res.status(500).json({ success: false, message: 'Error', code: 500 })
-});
+})
 
 
 /**
 * @swagger
-* /api/tour/{sortId}:
+* /api/concert/{sortId}:
 *  put:
-*      summary: update a tour
-*      tags: [Tour]
+*      summary: update a concert
+*      tags: [Concert]
 *      parameters:
 *          - in: path
 *            name: sortId
 *            schema:
 *               type: string
 *            required: true
-*            description: the tour is update 
+*            description: the concert is update 
 *      requestBody:
 *          required: true
 *          content:
 *              application/json:
 *               schema:
 *                  type: object
-*                  $ref: '#/components/schemas/Tour'
+*                  $ref: '#/components/schemas/Concert'
 *      responses:
 *          200:
-*              description: tour update!
+*              description: concert update!
 *          400:
-*              description: tour not found!
+*              description: concert not found!
 * 
 */
 
-tourRoute.put('/tour/:sortId', async (req, res) => {
+concertRoute.put('/concert/:sortId', async (req, res) => {
     const { sortId } = req.params;
-    const { success } = await updateTour(sortId, req.body)
+    const { success } = await updateConcert(sortId, req.body)
     if (success) {
         return res.status(200).json({ success, message: 'Update success!!!', code: 201 })
     }
     return res.status(500).json({ success: false, message: 'Error', code: 500 })
 })
-
-module.exports = tourRoute;
+module.exports = concertRoute;

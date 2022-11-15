@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const tour_route = require('./routes/tour.route');
+const concert_route = require('./routes/concert.route');
 const swaggerUI = require("swagger-ui-express");
 const swaggerJSDoc = require("swagger-jsdoc");
 const cors = require('cors');
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 })
 
 app.use('/api', tour_route);
+app.use('/api', concert_route);
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJSDoc(swaggerSpec)))
 
 

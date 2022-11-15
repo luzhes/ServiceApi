@@ -1,8 +1,8 @@
 const {tableName, dynamoDB} = require('../config/db.config')
 const { v4: uuidv4 } = require('uuid');
-const PartitionKey = 'TOUR';
+const PartitionKey = 'CONCERT';
 
-const getAllTours = async () => {
+const getAllConcerts = async () => {
     const params = {
         TableName: tableName,
         Key: {
@@ -18,7 +18,7 @@ const getAllTours = async () => {
     }
 }
 
-async function getTourById(id) {
+async function getConcertById(id) {
     const params = {
         TableName: tableName,
         Key: {
@@ -34,15 +34,17 @@ async function getTourById(id) {
     }
 }
 
-async function registerTour(bodyRequest) {
+
+async function registerConcert(bodyRequest) {
     const params = {
         TableName: tableName,
         Item: {
             id: PartitionKey,
             sortid: PartitionKey + '-' + uuidv4(),
-            year: parseInt(bodyRequest.year),
-            name: bodyRequest.name,
-            codeBand: bodyRequest.band
+            location: bodyRequest.location,
+            date: bodyRequest.date,
+            stadium: bodyRequest.stadium,
+            tour: bodyRequest.tour,
         }
     }
     try {
@@ -53,7 +55,8 @@ async function registerTour(bodyRequest) {
     }
 }
 
-async function removeTour(sortId) {
+
+async function removeConcert(sortId) {
     var params = {
         TableName: tableName,
         Key: {
@@ -70,15 +73,16 @@ async function removeTour(sortId) {
     }
 }
 
-async function updateTour(sortId, bodyRequest) {
+async function updateConcert(sortId, bodyRequest) {
     const params = {
         TableName: tableName,
         Item: {
             id: PartitionKey,
             sortid: sortId,
-            year: parseInt(bodyRequest.year),
-            name: bodyRequest.name,
-            band: bodyRequest.band
+            location: bodyRequest.location,
+            date: bodyRequest.date,
+            stadium: bodyRequest.stadium,
+            tour: bodyRequest.tour
         }
     }
     try {
@@ -89,11 +93,10 @@ async function updateTour(sortId, bodyRequest) {
     }
 }
 
-
 module.exports = {
-    getAllTours,
-    getTourById,
-    registerTour,
-    removeTour,
-    updateTour
+    getAllConcerts,
+    registerConcert,
+    getConcertById,
+    removeConcert,
+    updateConcert
 }
