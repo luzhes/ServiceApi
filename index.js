@@ -3,10 +3,12 @@ const bodyParser = require('body-parser');
 const tour_route = require('./routes/tour.route');
 const swaggerUI = require("swagger-ui-express");
 const swaggerJSDoc = require("swagger-jsdoc");
+const cors = require('cors');
 const path = require("path");
 const app = express();
 var PORT = process.env.PORT|| 8080;
 
+app.use(cors());
 const swaggerSpec = {
     definition: {
         openapi: "3.0.0",
@@ -14,11 +16,7 @@ const swaggerSpec = {
             title: "Dynamon Tour - Concert Service",
             version: "1.0.0"
         },
-        servers: [
-            {
-                url: "http://localhost:8080"
-            }
-        ]
+        
     },
     apis: [`${path.join(__dirname, "./routes/*.js")}`]
 }
