@@ -1,6 +1,6 @@
 const express = require('express');
-const { getAllTours, getTourById, registerTour, removeTour, updateTour } = require('../src/dataBase/tour.db')
 const tourRoute = express.Router();
+const { tours, tour, createTour, deleteTour, updateTour } = require('../src/controller/tour')
 
 /**
  * @swagger
@@ -25,7 +25,7 @@ const tourRoute = express.Router();
  *          example:
  *              year: 2022
  *              name: 'Latidos'
- *              band: 'THE SCRIPT'
+ *              band: 'BAND-'
  *  
  */
 
@@ -44,14 +44,7 @@ const tourRoute = express.Router();
  *                          type: array
  */
 
- tourRoute.get('/tours', async (req, res) => {
-    const { success, data } = await getAllTours()
-
-    if (success) {
-        return res.status(200).json({ success, data, code: 200 })
-    }
-    return res.status(500).json({ success: false, messsage: "Error", code: 500 })
-})
+tourRoute.get('/tours', tours);
 
 /**
  * @swagger
@@ -77,15 +70,7 @@ const tourRoute = express.Router();
  *              description: tour not found!
  */
 
-tourRoute.get("/tour/:sortId", async (req, res) => {
-    const { sortId } = req.params;
-    const { success, data } = await getTourById(sortId);
-    if (success) {
-        return res.status(200).json({ success, data, code: 200 });
-    }
-
-    return res.status(500).json({ success: false, message: "Error", code: 500 });
-});
+tourRoute.get("/tour/:sortId", tour);
 
 /**
  * @swagger
@@ -106,13 +91,7 @@ tourRoute.get("/tour/:sortId", async (req, res) => {
  * 
  */
 
-tourRoute.post('/tour/createTour', async (req, res) => {
-    const { success } = await registerTour(req.body)
-    if (success) {
-        return res.status(201).json({ success, message: 'Register success!!!', code: 201 })
-    }
-    return res.status(500).json({ success: false, message: 'Error', code: 500 })
-})
+tourRoute.post('/tour/createTour', createTour)
 
 /**
  * @swagger
@@ -133,14 +112,7 @@ tourRoute.post('/tour/createTour', async (req, res) => {
  *          404:
  *              description: tour not found!
  */
-tourRoute.delete('/tour/:sortId', async (req, res) => {
-    const { sortId } = req.params;
-    const { success } = await removeTour(sortId)
-    if (success) {
-        return res.status(200).json({ success, code: 200 })
-    }
-    return res.status(500).json({ success: false, message: 'Error', code: 500 })
-});
+tourRoute.delete('/tour/:sortId', deleteTour);
 
 
 /**
@@ -171,13 +143,6 @@ tourRoute.delete('/tour/:sortId', async (req, res) => {
 * 
 */
 
-tourRoute.put('/tour/:sortId', async (req, res) => {
-    const { sortId } = req.params;
-    const { success } = await updateTour(sortId, req.body)
-    if (success) {
-        return res.status(200).json({ success, message: 'Update success!!!', code: 201 })
-    }
-    return res.status(500).json({ success: false, message: 'Error', code: 500 })
-})
+tourRoute.put('/tour/:sortId', updateTour)
 
 module.exports = tourRoute;

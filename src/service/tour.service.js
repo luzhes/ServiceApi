@@ -1,20 +1,24 @@
-const {tableName, dynamoDB} = require('../config/db.config')
+const { tableName, dynamoDB } = require('../config/db.config')
 const { v4: uuidv4 } = require('uuid');
 const PartitionKey = 'TOUR';
 
 const getAllTours = async () => {
     const params = {
         TableName: tableName,
-        Key: {
-            id: PartitionKey,
+        FilterExpression: '#PK = :PK',
+        ExpressionAttributeNames: {
+            '#PK': 'id',
         },
+        ExpressionAttributeValues: {
+            ':PK': PartitionKey,
+        }
     }
 
     try {
         const { Items = [] } = await dynamoDB.scan(params).promise()
-        return { success: true, data: Items }
+        return { result: true, data: Items }
     } catch (error) {
-        return { success: false, data: null }
+        return { result: false, data: null }
     }
 }
 
@@ -28,9 +32,9 @@ async function getTourById(id) {
     };
     try {
         const { Item = {} } = await dynamoDB.get(params).promise();
-        return { success: true, data: Item };
+        return { result: true, data: Item };
     } catch (error) {
-        return { success: false, data: null };
+        return { result: false, data: null };
     }
 }
 
@@ -42,14 +46,14 @@ async function registerTour(bodyRequest) {
             sortid: PartitionKey + '-' + uuidv4(),
             year: parseInt(bodyRequest.year),
             name: bodyRequest.name,
-            codeBand: bodyRequest.band
+            band: bodyRequest.band
         }
     }
     try {
         await dynamoDB.put(params).promise()
-        return { success: true }
+        return { result: true }
     } catch (error) {
-        return { success: false }
+        return { result: false }
     }
 }
 
@@ -64,13 +68,13 @@ async function removeTour(sortId) {
 
     try {
         await dynamoDB.delete(params).promise();
-        return { success: true }
+        return { result: true }
     } catch (err) {
-        return { success: false }
+        return { result: false }
     }
 }
 
-async function updateTour(sortId, bodyRequest) {
+async function _updateTour(sortId, bodyRequest) {
     const params = {
         TableName: tableName,
         Item: {
@@ -83,17 +87,16 @@ async function updateTour(sortId, bodyRequest) {
     }
     try {
         await dynamoDB.put(params).promise()
-        return { success: true }
+        return { result: true }
     } catch (error) {
-        return { success: false }
+        return { result: false }
     }
 }
-
 
 module.exports = {
     getAllTours,
     getTourById,
     registerTour,
     removeTour,
-    updateTour
+    _updateTour
 }

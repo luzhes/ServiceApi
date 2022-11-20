@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllConcerts, getConcertById, registerConcert, removeConcert, updateConcert } = require('../src/dataBase/concert.db');
+const { concerts, concert, createConcert, deleteConcert, updateConcert } = require('../src/controller/concert')
 const concertRoute = express.Router()
 
 /**
@@ -48,14 +48,7 @@ const concertRoute = express.Router()
  *                          type: array
  */
 
-concertRoute.get('/concerts', async (req, res) => {
-    const { success, data } = await getAllConcerts()
-
-    if (success) {
-        return res.status(200).json({ success, data, code: 200 })
-    }
-    return res.status(500).json({ success: false, messsage: "Error", code: 500 })
-})
+concertRoute.get('/concerts', concerts)
 
 
 /**
@@ -82,15 +75,7 @@ concertRoute.get('/concerts', async (req, res) => {
  *              description: concert not found!
  */
 
-concertRoute.get("/concert/:sortId", async (req, res) => {
-    const { sortId } = req.params;
-    const { success, data } = await getConcertById(sortId);
-    if (success) {
-        return res.status(200).json({ success, data, code: 200 });
-    }
-
-    return res.status(500).json({ success: false, message: "Error", code: 500 });
-});
+concertRoute.get("/concert/:sortId", concert);
 
 /**
  * @swagger
@@ -111,13 +96,7 @@ concertRoute.get("/concert/:sortId", async (req, res) => {
  * 
  */
 
-concertRoute.post('/concert/createConcert', async (req, res) => {
-    const { success } = await registerConcert(req.body)
-    if (success) {
-        return res.status(201).json({ success, message: 'Register success!!!', code: 201 })
-    }
-    return res.status(500).json({ success: false, message: 'Error', code: 500 })
-})
+concertRoute.post('/concert/createConcert', createConcert)
 
 /**
  * @swagger
@@ -139,14 +118,7 @@ concertRoute.post('/concert/createConcert', async (req, res) => {
  *              description: concert not found!
  */
 
-concertRoute.delete('/concert/:sortId', async (req, res) => {
-    const { sortId } = req.params;
-    const { success } = await removeConcert(sortId)
-    if (success) {
-        return res.status(200).json({ success, code: 200 })
-    }
-    return res.status(500).json({ success: false, message: 'Error', code: 500 })
-})
+concertRoute.delete('/concert/:sortId', deleteConcert)
 
 
 /**
@@ -177,12 +149,5 @@ concertRoute.delete('/concert/:sortId', async (req, res) => {
 * 
 */
 
-concertRoute.put('/concert/:sortId', async (req, res) => {
-    const { sortId } = req.params;
-    const { success } = await updateConcert(sortId, req.body)
-    if (success) {
-        return res.status(200).json({ success, message: 'Update success!!!', code: 201 })
-    }
-    return res.status(500).json({ success: false, message: 'Error', code: 500 })
-})
+concertRoute.put('/concert/:sortId', updateConcert)
 module.exports = concertRoute;

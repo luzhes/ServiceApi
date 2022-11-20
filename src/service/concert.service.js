@@ -1,20 +1,24 @@
-const {tableName, dynamoDB} = require('../config/db.config')
+const { tableName, dynamoDB } = require('../config/db.config')
 const { v4: uuidv4 } = require('uuid');
 const PartitionKey = 'CONCERT';
 
 const getAllConcerts = async () => {
     const params = {
         TableName: tableName,
-        Key: {
-            id: PartitionKey,
+        FilterExpression: '#PK = :PK',
+        ExpressionAttributeNames: {
+            '#PK': 'id',
         },
+        ExpressionAttributeValues: {
+            ':PK': PartitionKey,
+        }
     }
 
     try {
         const { Items = [] } = await dynamoDB.scan(params).promise()
-        return { success: true, data: Items }
+        return { result: true, data: Items }
     } catch (error) {
-        return { success: false, data: null }
+        return { result: false, data: null }
     }
 }
 
@@ -28,12 +32,11 @@ async function getConcertById(id) {
     };
     try {
         const { Item = {} } = await dynamoDB.get(params).promise();
-        return { success: true, data: Item };
+        return { result: true, data: Item };
     } catch (error) {
-        return { success: false, data: null };
+        return { result: false, data: null };
     }
 }
-
 
 async function registerConcert(bodyRequest) {
     const params = {
@@ -49,12 +52,11 @@ async function registerConcert(bodyRequest) {
     }
     try {
         await dynamoDB.put(params).promise()
-        return { success: true }
+        return { result: true }
     } catch (error) {
-        return { success: false }
+        return { result: false }
     }
 }
-
 
 async function removeConcert(sortId) {
     var params = {
@@ -67,13 +69,13 @@ async function removeConcert(sortId) {
 
     try {
         await dynamoDB.delete(params).promise();
-        return { success: true }
+        return { result: true }
     } catch (err) {
-        return { success: false }
+        return { result: false }
     }
 }
 
-async function updateConcert(sortId, bodyRequest) {
+async function _updateConcert(sortId, bodyRequest) {
     const params = {
         TableName: tableName,
         Item: {
@@ -87,9 +89,9 @@ async function updateConcert(sortId, bodyRequest) {
     }
     try {
         await dynamoDB.put(params).promise()
-        return { success: true }
+        return { result: true }
     } catch (error) {
-        return { success: false }
+        return { result: false }
     }
 }
 
@@ -98,5 +100,5 @@ module.exports = {
     registerConcert,
     getConcertById,
     removeConcert,
-    updateConcert
+    _updateConcert
 }
