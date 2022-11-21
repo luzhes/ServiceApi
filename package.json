@@ -4,6 +4,7 @@
   "description": "Servicio de Apis con DynamoDB",
   "main": "index.js",
   "scripts": {
+    "test": "mocha tests/api.test.js",
     "start": "node index.js"
   },
   "author": "Heidy Condori",
@@ -14,6 +15,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "mocha": "^10.1.0",
+    "supertest": "^6.3.1",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0",
     "uuid": "^9.0.0",
